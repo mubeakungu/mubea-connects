@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Record Sale</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container py-4">
+  <h3>Record Sale</h3>
+  <form method="post" class="row g-2 mb-3">
+    <div class="col-md-3"><input name="cname" placeholder="Customer name" class="form-control"></div>
+    <div class="col-md-3"><input name="phone" placeholder="Phone" class="form-control" required></div>
+    <div class="col-md-3">
+      <select name="product_id" class="form-select">
+        {% for p in products %}
+        <option value="{{ p.id }}">{{ p.name }} ({{ p.margin_pct }}%)</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2"><input name="amount" placeholder="Amount (KSh)" class="form-control" required></div>
+    <div class="col-md-1">
+      <select name="agent_id" class="form-select">
+        <option value="">Agent</option>
+        {% for a in agents %}
+        <option value="{{ a.id }}">{{ a.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-12"><input name="note" placeholder="Note" class="form-control"></div>
+    <div class="col-12"><button class="btn btn-success">Record Sale</button> <a href="{{ url_for('index') }}" class="btn btn-secondary">Back</a></div>
+  </form>
+</div>
+</body>
+</html>
