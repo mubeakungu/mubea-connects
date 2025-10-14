@@ -58,6 +58,7 @@
       <h4><i class="fas fa-tools text-primary"></i> Agent Services</h4>
       <p class="text-muted">Add or manage the products and services you provide.</p>
       <div class="row g-4">
+        <!-- Card 1: Airtime Top-up (col-md-4) -->
         <div class="col-md-4">
           <div class="card h-100 shadow-sm">
             <div class="card-body text-center">
@@ -68,6 +69,7 @@
             </div>
           </div>
         </div>
+        <!-- Card 2: Bill Payments (col-md-4) -->
         <div class="col-md-4">
           <div class="card h-100 shadow-sm">
             <div class="card-body text-center">
@@ -78,6 +80,7 @@
             </div>
           </div>
         </div>
+        <!-- Card 3: Data Bundles (col-md-4) -->
         <div class="col-md-4">
           <div class="card h-100 shadow-sm">
             <div class="card-body text-center">
@@ -85,6 +88,28 @@
               <h5 class="card-title">Data Bundles</h5>
               <p class="card-text text-muted">Sell Safaricom, Airtel & Telkom bundles.</p>
               <a href="{{ url_for('manage_services') }}" class="btn btn-primary w-100">Manage</a>
+            </div>
+          </div>
+        </div>
+        <!-- Card 4: Govt Payments (col-md-4) - NEW -->
+        <div class="col-md-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+              <i class="fas fa-landmark fa-2x text-primary mb-3"></i>
+              <h5 class="card-title">Govt Payments</h5>
+              <p class="card-text text-muted">Facilitate KRA, NTSA, and county payments.</p>
+              <a href="{{ url_for('manage_gov_payments') }}" class="btn btn-primary w-100">Manage</a>
+            </div>
+          </div>
+        </div>
+        <!-- Card 5: Cash Withdrawals (col-md-4) - NEW -->
+        <div class="col-md-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+              <i class="fas fa-money-check-alt fa-2x text-primary mb-3"></i>
+              <h5 class="card-title">Cash Withdrawals</h5>
+              <p class="card-text text-muted">Process secure cash-out transactions.</p>
+              <a href="{{ url_for('manage_cash_out') }}" class="btn btn-primary w-100">Manage</a>
             </div>
           </div>
         </div>
@@ -104,7 +129,7 @@
       <h4><i class="fas fa-store-alt text-success"></i> Available Services</h4>
       <p class="text-muted">Choose a service to purchase or transfer funds.</p>
       <div class="row g-4">
-        <!-- Card 1: Buy Airtime -->
+        <!-- Card 1: Buy Airtime (col-md-3) -->
         <div class="col-md-3">
           <div class="card h-100 shadow-sm">
             <div class="card-body text-center">
@@ -115,7 +140,7 @@
             </div>
           </div>
         </div>
-        <!-- Card 2: Pay Bills -->
+        <!-- Card 2: Pay Bills (col-md-3) -->
         <div class="col-md-3">
           <div class="card h-100 shadow-sm">
             <div class="card-body text-center">
@@ -126,7 +151,7 @@
             </div>
           </div>
         </div>
-        <!-- Card 3: Buy Data -->
+        <!-- Card 3: Buy Data (col-md-3) -->
         <div class="col-md-3">
           <div class="card h-100 shadow-sm">
             <div class="card-body text-center">
@@ -137,7 +162,7 @@
             </div>
           </div>
         </div>
-        <!-- Card 4: Send Money (P2P Transfer) - NEW -->
+        <!-- Card 4: Send Money (P2P Transfer) (col-md-3) -->
         <div class="col-md-3">
           <div class="card h-100 shadow-sm border-primary border-3">
             <div class="card-body text-center">
@@ -145,6 +170,28 @@
               <h5 class="card-title">Send Money</h5>
               <p class="card-text text-muted">Transfer funds to other users easily.</p>
               <a href="{{ url_for('transfer_funds') }}" class="btn btn-primary w-100">Transfer Now</a>
+            </div>
+          </div>
+        </div>
+        <!-- Card 5: Government Services (col-md-3) - NEW -->
+        <div class="col-md-3">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+              <i class="fas fa-gavel fa-2x text-success mb-3"></i>
+              <h5 class="card-title">Govt Services</h5>
+              <p class="card-text text-muted">Pay for KRA, NTSA, and county services.</p>
+              <a href="{{ url_for('pay_government_services') }}" class="btn btn-success w-100">Pay Now</a>
+            </div>
+          </div>
+        </div>
+        <!-- Card 6: Cash Out (col-md-3) - NEW -->
+        <div class="col-md-3">
+          <div class="card h-100 shadow-sm border-warning border-3">
+            <div class="card-body text-center">
+              <i class="fas fa-money-check-alt fa-2x text-warning mb-3"></i>
+              <h5 class="card-title">Cash Out</h5>
+              <p class="card-text text-muted">Request funds withdrawal from an agent.</p>
+              <a href="{{ url_for('cash_out') }}" class="btn btn-warning w-100">Withdraw</a>
             </div>
           </div>
         </div>
@@ -171,4 +218,6 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
+
 
