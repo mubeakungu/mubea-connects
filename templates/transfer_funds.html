@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Transfer Funds{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Transfer Funds (P2P)</h5>
+                </div>
+                <div class="card-body">
+                    <p class="alert alert-info">
+                        Your current wallet balance is: **KSh {{ "%.2f"|format(user.wallet.balance|float) }}**
+                    </p>
+
+                    <form method="POST" action="{{ url_for('transfer_funds') }}">
+                        <div class="mb-3">
+                            <label for="recipient_phone" class="form-label">Recipient Phone (e.g., 2547XXXXXXXX)</label>
+                            <input type="text" class="form-control" id="recipient_phone" name="recipient_phone" required pattern="2547\d{8}">
+                            <div class="form-text">Must be another user's registered phone number.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">Amount (KSh)</label>
+                            <input type="number" step="1.00" min="1" class="form-control" id="amount" name="amount" required>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Send Money</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
