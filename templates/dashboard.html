@@ -28,6 +28,7 @@
       <div>
         <h2>Welcome, {{ user.name or user.phone }}!</h2>
         <p class="mb-0">Your Role: <b>{{ user.role|capitalize }}</b></p>
+        <!-- Note: Role display is capitalized for presentation -->
       </div>
       <div>
         <a href="{{ url_for('wallet_view') }}" class="btn btn-light me-2 shadow-sm">
@@ -52,7 +53,7 @@
     {% endwith %}
 
     <!-- Agent Section -->
-    {% if user.role == 'agent' %}
+    {% if user.role|lower == 'agent' %}
     <div class="mb-5">
       <h4><i class="fas fa-tools text-primary"></i> Agent Services</h4>
       <p class="text-muted">Add or manage the products and services you provide.</p>
@@ -92,12 +93,13 @@
         <a href="{{ url_for('manage_services') }}" class="btn btn-outline-success shadow-sm">
           <i class="fas fa-plus-circle"></i> Add New Service
         </a>
+        
       </div>
     </div>
     {% endif %}
 
     <!-- Client Section -->
-    {% if user.role == 'client' %}
+    {% if user.role|lower == 'client' %}
     <div class="mb-5">
       <h4><i class="fas fa-store-alt text-success"></i> Available Services</h4>
       <p class="text-muted">Choose a service to purchase or transfer funds.</p>
@@ -151,7 +153,7 @@
     {% endif %}
 
     <!-- Admin Section -->
-    {% if user.role == 'admin' %}
+    {% if user.role|lower == 'admin' %}
     <hr class="my-5">
     <div class="mb-4">
       <h4><i class="fas fa-user-shield text-danger"></i> Admin Control Panel</h4>
