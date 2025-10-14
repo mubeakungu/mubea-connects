@@ -455,6 +455,28 @@ def transfer_funds():
 
 # ----------------- NEW Client Service Routes -----------------
 
+@app.route('/pay_rent', methods=['GET', 'POST'])
+@login_required
+def pay_rent():
+    if request.method == 'POST':
+        property_id = request.form.get('property_id', '').strip()
+        description = request.form.get('description', '').strip()
+        amount_raw = request.form.get('amount', '').strip()
+        try:
+            amount = Decimal(amount_raw)
+            if amount <= 0: raise ValueError()
+        except:
+            flash("Enter a valid positive amount.", "danger"); return redirect(url_for('pay_rent'))
+        try:
+            note = f"Rent Payment for {description} (Ref: {property_id})"
+            deduct_wallet(current_user.wallet, amount, note=note)
+            flash(f"Rent payment of KSh {amount} for {description} initiated.", "success")
+        except ValueError as e:
+            flash(str(e), "danger")
+        return redirect(url_for('wallet_view'))
+    # NOTE: You need to create 'pay_rent.html'
+    return render_template('pay_rent.html', user=current_user)
+
 @app.route('/pay_government_services', methods=['GET', 'POST'])
 @login_required
 def pay_government_services():
@@ -569,4 +591,3 @@ if __name__ == '__main__':
             db.session.add(admin); db.session.commit()
             create_wallet_for_user(admin)
     app.run(debug=True)
-
