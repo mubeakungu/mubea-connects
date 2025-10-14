@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Pay Rent - Mubea Wallet{% endblock %}
+
+{% block content %}
+
+<div class="max-w-xl mx-auto"> <div class="card p-6 md:p-10"> <h1 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-2">Pay Rent (House, Car, Shop)</h1>
+
+    <div class="bg-indigo-50 p-4 rounded-lg mb-6">
+        <p class="text-sm font-semibold text-indigo-700">Current Balance:</p>
+        <p class="text-2xl font-extrabold text-indigo-600">KSh {{ "{:,.2f}".format(user.wallet.balance) }}</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('pay_rent') }}" class="space-y-6">
+        <!-- Property/Reference ID -->
+        <div>
+            <label for="property_id" class="block text-sm font-medium text-gray-700 mb-1">
+                Property/Lease Reference ID
+            </label>
+            <input type="text" name="property_id" id="property_id" required
+                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150"
+                   placeholder="e.g., House A-4, Car Lease 123, Shop 5A">
+        </div>
+
+        <!-- Description (Optional detail for better note tracking) -->
+        <div>
+            <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
+                Rent Type / Description
+            </label>
+            <select name="description" id="description" required
+                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 bg-white transition duration-150">
+                <option value="" disabled selected>Select Rent Type</option>
+                <option value="House Rent">House Rent</option>
+                <option value="Car Rental/Lease">Car Rental/Lease</option>
+                <option value="Shop/Office Rent">Shop/Office Rent</option>
+                <option value="Other Rent">Other Rent/Lease</option>
+            </select>
+        </div>
+
+        <!-- Amount -->
+        <div>
+            <label for="amount" class="block text-sm font-medium text-gray-700 mb-1">
+                Amount (KSh)
+            </label>
+            <input type="number" name="amount" id="amount" required min="1" step="0.01"
+                   class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 transition duration-150"
+                   placeholder="Enter rent amount (e.g., 15000)">
+        </div>
+
+        <!-- Submit Button -->
+        <div>
+            <button type="submit"
+                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-full shadow-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out transform hover:scale-105">
+                Confirm Rent Payment
+            </button>
+        </div>
+    </form>
+</div>
+
+</div> {% endblock %}
