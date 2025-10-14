@@ -1,121 +1,172 @@
 <!doctype html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>Dashboard - Mubea Connect</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body { background: #f7f9fc; }
-    .card { transition: transform 0.2s ease, box-shadow 0.2s ease; border: none; }
-    .card:hover { transform: translateY(-5px); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-    .header { background: #0d6efd; color: white; border-radius: 8px; padding: 20px; }
-    h2, h4 { font-weight: 600; }
-  </style>
+  <meta charset="utf-8">
+  <title>Dashboard - Mubea Connect</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Added Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    body { background: #f7f9fc; }
+    .card { transition: transform 0.2s ease, box-shadow 0.2s ease; border: none; border-radius: 10px; }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+    .header { 
+      background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%); 
+      color: white; 
+      border-radius: 12px; 
+      padding: 30px; 
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    h2, h4 { font-weight: 700; }
+  </style>
 </head>
 <body>
-  <div class="container py-4">
+  <div class="container py-5">
 
-    <!-- Header Section -->
-    <div class="d-flex justify-content-between align-items-center mb-4 header">
-      <div>
-        <h2>Welcome {{ user.name or user.phone }}</h2>
-        <p class="mb-0">Role: <b>{{ user.role|capitalize }}</b></p>
-      </div>
-      <div>
-        <a href="{{ url_for('wallet_view') }}" class="btn btn-light me-2">💰 My Wallet</a>
-        <a href="{{ url_for('logout') }}" class="btn btn-outline-light">Logout</a>
-      </div>
-    </div>
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-5 header">
+      <div>
+        <h2>Welcome, {{ user.name or user.phone }}!</h2>
+        <p class="mb-0">Your Role: <b>{{ user.role|capitalize }}</b></p>
+      </div>
+      <div>
+        <a href="{{ url_for('wallet_view') }}" class="btn btn-light me-2 shadow-sm">
+          <i class="fas fa-wallet"></i> My Wallet
+        </a>
+        <a href="{{ url_for('logout') }}" class="btn btn-outline-light shadow-sm">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+      </div>
+    </div>
 
-    <!-- Agent Section -->
-    {% if user.role == 'agent' %}
-    <div class="mb-5">
-      <h4>🧰 My Services</h4>
-      <p class="text-muted">Add or manage the products and services you provide.</p>
-      <div class="row g-3">
-        <div class="col-md-4">
-          <div class="card h-100">
-            <div class="card-body text-center">
-              <h5 class="card-title">📱 Airtime Top-up</h5>
-              <p class="card-text text-muted">Sell airtime for major networks.</p>
-              <a href="{{ url_for('manage_services') }}" class="btn btn-primary w-100">Manage</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card h-100">
-            <div class="card-body text-center">
-              <h5 class="card-title">💡 Bill Payments</h5>
-              <p class="card-text text-muted">Offer electricity, water & TV payments.</p>
-              <a href="{{ url_for('manage_services') }}" class="btn btn-primary w-100">Manage</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card h-100">
-            <div class="card-body text-center">
-              <h5 class="card-title">🌐 Data Bundles</h5>
-              <p class="card-text text-muted">Sell Safaricom, Airtel & Telkom bundles.</p>
-              <a href="{{ url_for('manage_services') }}" class="btn btn-primary w-100">Manage</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="mt-3 text-end">
-        <a href="{{ url_for('manage_services') }}" class="btn btn-outline-success">➕ Add New Service</a>
-      </div>
-    </div>
-    {% endif %}
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
 
-    <!-- Client Section -->
-    {% if user.role == 'client' %}
-    <div class="mb-5">
-      <h4>🛍️ Available Services</h4>
-      <p class="text-muted">Choose a service to purchase or request.</p>
-      <div class="row g-3">
-        <div class="col-md-4">
-          <div class="card h-100">
-            <div class="card-body text-center">
-              <h5 class="card-title">📱 Buy Airtime</h5>
-              <p class="card-text text-muted">Instant airtime top-up for your line.</p>
-              <a href="{{ url_for('buy_airtime') }}" class="btn btn-success w-100">Buy Now</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card h-100">
-            <div class="card-body text-center">
-              <h5 class="card-title">💳 Pay Bills</h5>
-              <p class="card-text text-muted">Electricity, TV & water bills made easy.</p>
-              <a href="{{ url_for('pay_bill') }}" class="btn btn-success w-100">Pay Bill</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card h-100">
-            <div class="card-body text-center">
-              <h5 class="card-title">🌐 Buy Data</h5>
-              <p class="card-text text-muted">Affordable bundles for all networks.</p>
-              <a href="{{ url_for('buy_data') }}" class="btn btn-success w-100">Get Bundles</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    {% endif %}
+    <!-- Agent Section -->
+    {% if user.role == 'agent' %}
+    <div class="mb-5">
+      <h4><i class="fas fa-tools text-primary"></i> Agent Services</h4>
+      <p class="text-muted">Add or manage the products and services you provide.</p>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+              <i class="fas fa-mobile-alt fa-2x text-primary mb-3"></i>
+              <h5 class="card-title">Airtime Top-up</h5>
+              <p class="card-text text-muted">Sell airtime for major networks.</p>
+              <a href="{{ url_for('manage_services') }}" class="btn btn-primary w-100">Manage</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+              <i class="fas fa-lightbulb fa-2x text-primary mb-3"></i>
+              <h5 class="card-title">Bill Payments</h5>
+              <p class="card-text text-muted">Offer electricity, water & TV payments.</p>
+              <a href="{{ url_for('manage_services') }}" class="btn btn-primary w-100">Manage</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+              <i class="fas fa-wifi fa-2x text-primary mb-3"></i>
+              <h5 class="card-title">Data Bundles</h5>
+              <p class="card-text text-muted">Sell Safaricom, Airtel & Telkom bundles.</p>
+              <a href="{{ url_for('manage_services') }}" class="btn btn-primary w-100">Manage</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-4 text-end">
+        <a href="{{ url_for('manage_services') }}" class="btn btn-outline-success shadow-sm">
+          <i class="fas fa-plus-circle"></i> Add New Service
+        </a>
+      </div>
+    </div>
+    {% endif %}
 
-    <!-- Admin Section -->
-    {% if user.role == 'admin' %}
-    <hr>
-    <div class="mb-4">
-      <h4>⚙️ Admin Area</h4>
-      <p class="text-muted">Manage users and services here (more features coming soon).</p>
-      <a href="{{ url_for('admin_users') }}" class="btn btn-warning me-2">👤 Manage Users</a>
-      <button class="btn btn-dark">📊 View Transactions</button>
-    </div>
-    {% endif %}
+    <!-- Client Section -->
+    {% if user.role == 'client' %}
+    <div class="mb-5">
+      <h4><i class="fas fa-store-alt text-success"></i> Available Services</h4>
+      <p class="text-muted">Choose a service to purchase or transfer funds.</p>
+      <div class="row g-4">
+        <!-- Card 1: Buy Airtime -->
+        <div class="col-md-3">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+              <i class="fas fa-mobile-alt fa-2x text-success mb-3"></i>
+              <h5 class="card-title">Buy Airtime</h5>
+              <p class="card-text text-muted">Instant top-up for your line.</p>
+              <a href="{{ url_for('buy_airtime') }}" class="btn btn-success w-100">Buy Now</a>
+            </div>
+          </div>
+        </div>
+        <!-- Card 2: Pay Bills -->
+        <div class="col-md-3">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+              <i class="fas fa-receipt fa-2x text-success mb-3"></i>
+              <h5 class="card-title">Pay Bills</h5>
+              <p class="card-text text-muted">Electricity, TV & water bills.</p>
+              <a href="{{ url_for('pay_bill') }}" class="btn btn-success w-100">Pay Bill</a>
+            </div>
+          </div>
+        </div>
+        <!-- Card 3: Buy Data -->
+        <div class="col-md-3">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+              <i class="fas fa-globe fa-2x text-success mb-3"></i>
+              <h5 class="card-title">Buy Data</h5>
+              <p class="card-text text-muted">Affordable bundles for all networks.</p>
+              <a href="{{ url_for('buy_data') }}" class="btn btn-success w-100">Get Bundles</a>
+            </div>
+          </div>
+        </div>
+        <!-- Card 4: Send Money (P2P Transfer) - NEW -->
+        <div class="col-md-3">
+          <div class="card h-100 shadow-sm border-primary border-3">
+            <div class="card-body text-center">
+              <i class="fas fa-exchange-alt fa-2x text-primary mb-3"></i>
+              <h5 class="card-title">Send Money</h5>
+              <p class="card-text text-muted">Transfer funds to other users easily.</p>
+              <a href="{{ url_for('transfer_funds') }}" class="btn btn-primary w-100">Transfer Now</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
 
-  </div>
+    <!-- Admin Section -->
+    {% if user.role == 'admin' %}
+    <hr class="my-5">
+    <div class="mb-4">
+      <h4><i class="fas fa-user-shield text-danger"></i> Admin Control Panel</h4>
+      <p class="text-muted">Manage system users and view operational data.</p>
+      <a href="{{ url_for('admin_users') }}" class="btn btn-danger me-3 shadow-sm">
+        <i class="fas fa-users"></i> Manage Users
+      </a>
+      <button class="btn btn-dark shadow-sm">
+        <i class="fas fa-chart-line"></i> View System Reports
+      </button>
+    </div>
+    {% endif %}
+
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
 
