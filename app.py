@@ -104,6 +104,17 @@ def add_wallet_tx(wallet, tx_type, amount, note="", reference=""):
     db.session.add(wt)
     db.session.commit()
 
+def receive_wallet_tx(wallet, amount, note="", reference=""):
+    """
+    Credits a wallet. Used specifically for incoming funds like P2P transfers.
+    """
+    wallet.balance = Decimal(wallet.balance) + Decimal(amount)
+    wallet.updated_at = datetime.utcnow()
+    # Use 'transfer_in' type for the recipient's transaction
+    wt = WalletTx(wallet_id=wallet.id, type="transfer_in", amount=amount, note=note, reference=reference)
+    db.session.add(wt)
+    db.session.commit()
+
 def deduct_wallet(wallet, amount, note="", reference=""):
     if Decimal(wallet.balance) < Decimal(amount):
         raise ValueError("Insufficient balance")
@@ -382,6 +393,65 @@ def manage_services():
     my_services = Service.query.filter_by(created_by=current_user.id).order_by(Service.created_at.desc()).all()
     return render_template('manage_services.html', user=current_user, my_services=my_services)
 
+@app.route('/transfer', methods=['GET', 'POST'])
+@login_required
+def transfer_funds():
+    create_wallet_for_user(current_user) # Ensure sender has a wallet
+    
+    if request.method == 'POST':
+        # 1. Get and Validate Input
+        recipient_phone = request.form.get('recipient_phone', '').strip()
+        amount_raw = request.form.get('amount', '').strip()
+        
+        try:
+            amount = Decimal(amount_raw)
+            if amount <= 0:
+                flash("Enter a valid positive amount.", "danger"); return redirect(url_for('transfer_funds'))
+        except:
+            flash("Enter a valid amount.", "danger"); return redirect(url_for('transfer_funds'))
+            
+        # Check against sender's phone
+        if recipient_phone == current_user.phone:
+            flash("Cannot send money to yourself.", "danger"); return redirect(url_for('transfer_funds'))
+        
+        # 2. Find Recipient
+        recipient = User.query.filter_by(phone=recipient_phone).first()
+        if not recipient:
+            flash(f"User with phone number {recipient_phone} not found.", "danger"); return redirect(url_for('transfer_funds'))
+
+        create_wallet_for_user(recipient) # Ensure recipient has a wallet
+        
+        # 3. Process Transaction
+        try:
+            # Generate a common reference for both transactions
+            transfer_ref = f"P2P-{datetime.now().timestamp()}-{current_user.id}-{recipient.id}"
+            
+            # Sender: Deduct funds (uses existing deduct_wallet helper)
+            deduct_wallet(
+                current_user.wallet, 
+                amount, 
+                note=f"P2P transfer to {recipient.phone}", 
+                reference=transfer_ref
+            )
+            
+            # Recipient: Credit funds (uses new receive_wallet_tx helper)
+            receive_wallet_tx(
+                recipient.wallet, 
+                amount, 
+                note=f"P2P transfer from {current_user.phone}", 
+                reference=transfer_ref
+            )
+            
+            flash(f"Successfully sent KSh {amount} to {recipient.phone}.", "success")
+        
+        except ValueError as e:
+            # Catches "Insufficient balance" from deduct_wallet
+            flash(str(e), "danger")
+        
+        return redirect(url_for('wallet_view'))
+
+    return render_template('transfer_funds.html', user=current_user)
+
 # ----------------- Init and sample admin -----------------
 if __name__ == '__main__':
     with app.app_context():
@@ -393,3 +463,4 @@ if __name__ == '__main__':
             db.session.add(admin); db.session.commit()
             create_wallet_for_user(admin)
     app.run(debug=True)
+
