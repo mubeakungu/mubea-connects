@@ -1,56 +1,432 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Register - Mubea Connect</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Mubea Financial Services</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 20px 0;
+        }
+        .register-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .register-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .register-body {
+            padding: 30px;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .btn-register {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 12px;
+            font-weight: 600;
+        }
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .input-group-text {
+            background-color: #f8f9fa;
+        }
+        .validation-feedback {
+            font-size: 0.875rem;
+            margin-top: 5px;
+        }
+        .password-strength {
+            height: 5px;
+            border-radius: 3px;
+            margin-top: 5px;
+            transition: all 0.3s;
+        }
+        .strength-weak { background: #dc3545; width: 33%; }
+        .strength-medium { background: #ffc107; width: 66%; }
+        .strength-strong { background: #28a745; width: 100%; }
+    </style>
 </head>
-<body class="bg-light">
-<div class="container d-flex justify-content-center align-items-center min-vh-100">
-  <div class="card shadow p-4" style="max-width: 400px; width: 100%;">
-    <h2 class="text-center mb-4">Create Account</h2>
-    <form method="post">
-      <!-- Full name -->
-      <div class="mb-3">
-        <label class="form-label">Full Name</label>
-        <input class="form-control" name="name" placeholder="John Doe">
-      </div>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="register-card">
+                    <div class="register-header">
+                        <h2><i class="bi bi-person-plus-fill"></i> Create Your Account</h2>
+                        <p class="mb-0">Join Mubea Financial Services today</p>
+                    </div>
+                    
+                    <div class="register-body">
+                        <!-- Flash Messages -->
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category, message in messages %}
+                                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
 
-      <!-- Phone number -->
-      <div class="mb-3">
-        <label class="form-label">Phone Number</label>
-        <input class="form-control" name="phone" placeholder="2547XXXXXXXX" required>
-        <div class="form-text">Use your M-Pesa number in the format <strong>2547XXXXXXXX</strong>.</div>
-      </div>
+                        <form method="POST" action="{{ url_for('register') }}" id="registerForm" novalidate>
+                            
+                            <!-- Phone Number -->
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">
+                                    Phone Number <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-phone"></i>
+                                    </span>
+                                    <input type="tel" 
+                                           class="form-control" 
+                                           id="phone" 
+                                           name="phone" 
+                                           placeholder="254712345678"
+                                           value="{{ phone or '' }}"
+                                           required
+                                           pattern="254[17]\d{8}">
+                                </div>
+                                <small class="text-muted">Format: 254XXXXXXXXX (Kenyan number)</small>
+                                <div class="validation-feedback" id="phoneValidation"></div>
+                            </div>
 
-      <!-- Password -->
-      <div class="mb-3">
-        <label class="form-label">Password</label>
-        <input class="form-control" name="password" type="password" placeholder="Enter a strong password" required>
-      </div>
+                            <!-- Full Name -->
+                            <div class="mb-3">
+                                <label for="name" class="form-label">
+                                    Full Name <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-person"></i>
+                                    </span>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="name" 
+                                           name="name" 
+                                           placeholder="John Doe"
+                                           value="{{ name or '' }}"
+                                           required
+                                           minlength="2">
+                                </div>
+                            </div>
 
-      <!-- Role -->
-      <div class="mb-3">
-        <label class="form-label">Register as</label>
-        <select name="role" class="form-select">
-          <option value="client">Client</option>
-          <option value="agent">Agent</option>
-        </select>
-      </div>
+                            <!-- Email (Optional) -->
+                            <div class="mb-3">
+                                <label for="email" class="form-label">
+                                    Email Address <span class="text-muted">(Optional)</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-envelope"></i>
+                                    </span>
+                                    <input type="email" 
+                                           class="form-control" 
+                                           id="email" 
+                                           name="email" 
+                                           placeholder="john@example.com"
+                                           value="{{ email or '' }}">
+                                </div>
+                                <div class="validation-feedback" id="emailValidation"></div>
+                            </div>
 
-      <!-- Submit button -->
-      <button class="btn btn-primary w-100">Create Account</button>
-    </form>
+                            <!-- Password -->
+                            <div class="mb-3">
+                                <label for="password" class="form-label">
+                                    Password <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-lock"></i>
+                                    </span>
+                                    <input type="password" 
+                                           class="form-control" 
+                                           id="password" 
+                                           name="password" 
+                                           placeholder="Minimum 6 characters"
+                                           required
+                                           minlength="6">
+                                    <button class="btn btn-outline-secondary" 
+                                            type="button" 
+                                            id="togglePassword">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="password-strength" id="passwordStrength"></div>
+                                <small class="text-muted">Use at least 6 characters</small>
+                            </div>
 
-    <hr>
-    <p class="text-center mb-0">
-      Already have an account?
-      <a href="{{ url_for('login') }}" class="text-decoration-none">Login</a>
-    </p>
-    <p class="text-center mt-2">
-      <a href="{{ url_for('home') }}" class="btn btn-link btn-sm text-decoration-none">← Back to Home</a>
-    </p>
-  </div>
-</div>
+                            <!-- Confirm Password -->
+                            <div class="mb-3">
+                                <label for="confirm_password" class="form-label">
+                                    Confirm Password <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-lock-fill"></i>
+                                    </span>
+                                    <input type="password" 
+                                           class="form-control" 
+                                           id="confirm_password" 
+                                           name="confirm_password" 
+                                           placeholder="Re-enter password"
+                                           required>
+                                    <button class="btn btn-outline-secondary" 
+                                            type="button" 
+                                            id="toggleConfirmPassword">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="validation-feedback" id="confirmPasswordValidation"></div>
+                            </div>
+
+                            <!-- Account Type -->
+                            <div class="mb-3">
+                                <label class="form-label">Account Type</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" 
+                                           type="radio" 
+                                           name="role" 
+                                           id="roleClient" 
+                                           value="client" 
+                                           {% if not role or role == 'client' %}checked{% endif %}>
+                                    <label class="form-check-label" for="roleClient">
+                                        <i class="bi bi-person"></i> Personal Account
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" 
+                                           type="radio" 
+                                           name="role" 
+                                           id="roleAgent" 
+                                           value="agent"
+                                           {% if role == 'agent' %}checked{% endif %}>
+                                    <label class="form-check-label" for="roleAgent">
+                                        <i class="bi bi-briefcase"></i> Agent Account
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Referral Code -->
+                            <div class="mb-3">
+                                <label for="referral_code" class="form-label">
+                                    Referral Code <span class="text-muted">(Optional)</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-gift"></i>
+                                    </span>
+                                    <input type="text" 
+                                           class="form-control text-uppercase" 
+                                           id="referral_code" 
+                                           name="referral_code" 
+                                           placeholder="Enter referral code"
+                                           value="{{ referral_code or '' }}">
+                                </div>
+                                <small class="text-muted">Get bonus points if you have a referral code</small>
+                            </div>
+
+                            <!-- Terms and Conditions -->
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" 
+                                       class="form-check-input" 
+                                       id="terms" 
+                                       required>
+                                <label class="form-check-label" for="terms">
+                                    I agree to the <a href="#" target="_blank">Terms and Conditions</a>
+                                </label>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-register">
+                                    <i class="bi bi-person-plus"></i> Create Account
+                                </button>
+                            </div>
+
+                            <!-- Login Link -->
+                            <div class="text-center mt-3">
+                                <p class="mb-0">
+                                    Already have an account? 
+                                    <a href="{{ url_for('login') }}" class="text-decoration-none">
+                                        <strong>Login here</strong>
+                                    </a>
+                                </p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Toggle password visibility
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const password = document.getElementById('password');
+            const icon = this.querySelector('i');
+            
+            if (password.type === 'password') {
+                password.type = 'text';
+                icon.classList.replace('bi-eye', 'bi-eye-slash');
+            } else {
+                password.type = 'password';
+                icon.classList.replace('bi-eye-slash', 'bi-eye');
+            }
+        });
+
+        document.getElementById('toggleConfirmPassword').addEventListener('click', function() {
+            const confirmPassword = document.getElementById('confirm_password');
+            const icon = this.querySelector('i');
+            
+            if (confirmPassword.type === 'password') {
+                confirmPassword.type = 'text';
+                icon.classList.replace('bi-eye', 'bi-eye-slash');
+            } else {
+                confirmPassword.type = 'password';
+                icon.classList.replace('bi-eye-slash', 'bi-eye');
+            }
+        });
+
+        // Password strength indicator
+        document.getElementById('password').addEventListener('input', function() {
+            const password = this.value;
+            const strengthBar = document.getElementById('passwordStrength');
+            
+            if (password.length === 0) {
+                strengthBar.className = 'password-strength';
+                return;
+            }
+            
+            let strength = 0;
+            if (password.length >= 6) strength++;
+            if (password.length >= 10) strength++;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^a-zA-Z0-9]/.test(password)) strength++;
+            
+            if (strength <= 2) {
+                strengthBar.className = 'password-strength strength-weak';
+            } else if (strength <= 3) {
+                strengthBar.className = 'password-strength strength-medium';
+            } else {
+                strengthBar.className = 'password-strength strength-strong';
+            }
+        });
+
+        // Password match validation
+        document.getElementById('confirm_password').addEventListener('input', function() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = this.value;
+            const feedback = document.getElementById('confirmPasswordValidation');
+            
+            if (confirmPassword && password !== confirmPassword) {
+                feedback.textContent = '❌ Passwords do not match';
+                feedback.className = 'validation-feedback text-danger';
+                this.classList.add('is-invalid');
+            } else if (confirmPassword && password === confirmPassword) {
+                feedback.textContent = '✓ Passwords match';
+                feedback.className = 'validation-feedback text-success';
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            } else {
+                feedback.textContent = '';
+                this.classList.remove('is-invalid', 'is-valid');
+            }
+        });
+
+        // Phone validation
+        document.getElementById('phone').addEventListener('blur', function() {
+            const phone = this.value;
+            const feedback = document.getElementById('phoneValidation');
+            const pattern = /^254[17]\d{8}$/;
+            
+            if (phone && !pattern.test(phone)) {
+                feedback.textContent = '❌ Invalid format. Use 254XXXXXXXXX';
+                feedback.className = 'validation-feedback text-danger';
+                this.classList.add('is-invalid');
+            } else if (phone) {
+                // Check availability via AJAX
+                fetch('/check_phone', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({phone: phone})
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.available) {
+                        feedback.textContent = '✓ Phone number available';
+                        feedback.className = 'validation-feedback text-success';
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    } else {
+                        feedback.textContent = '❌ ' + data.message;
+                        feedback.className = 'validation-feedback text-danger';
+                        this.classList.add('is-invalid');
+                    }
+                });
+            }
+        });
+
+        // Email validation
+        document.getElementById('email').addEventListener('blur', function() {
+            const email = this.value;
+            const feedback = document.getElementById('emailValidation');
+            
+            if (email) {
+                fetch('/check_email', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({email: email})
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.available) {
+                        feedback.textContent = data.message === 'Email not required' ? '' : '✓ Email available';
+                        feedback.className = 'validation-feedback text-success';
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    } else {
+                        feedback.textContent = '❌ ' + data.message;
+                        feedback.className = 'validation-feedback text-danger';
+                        this.classList.add('is-invalid');
+                    }
+                });
+            }
+        });
+
+        // Uppercase referral code
+        document.getElementById('referral_code').addEventListener('input', function() {
+            this.value = this.value.toUpperCase();
+        });
+
+        // Form validation on submit
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            if (!this.checkValidity()) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            this.classList.add('was-validated');
+        });
+    </script>
 </body>
 </html>
+
